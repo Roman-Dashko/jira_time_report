@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JiraHello</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <!--<%= stylesheet_link_tag    '//aui-cdn.atlassian.com/aui-adg/5.9.12/css/aui.min.css', media: 'all' %>-->
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'https://romand.atlassian.net/atlassian-connect/all.js' %>
+
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>

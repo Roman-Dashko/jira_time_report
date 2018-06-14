@@ -1,0 +1,51 @@
+{
+  "name": "Test Plugin",
+  "description": "Atlassian Connect app",
+  "key": "com.example.myapp",
+  "baseUrl": "https://romand.serveo.net",
+  "vendor": {
+    "name": "Example, Inc.",
+    "url": "http://example.com"
+  },
+  "authentication": {
+    "type": "none"
+  },
+  "apiVersion": 1,
+  "modules": {
+    "generalPages": [
+      {
+        "url": "/jira/helloworld",
+        "key": "hello-world",
+        "location": "system.top.navigation.bar",
+        "name": {
+          "value": "Greeting"
+        }
+      }
+    ],
+    "webPanels": [
+      {
+        "key": "my-configuration-page",
+        "url": "/jira?id={board.id}&type={board.type}",
+        "name": {
+          "value": "My Configuration Page"
+        },
+        "location": "jira.agile.board.configuration",
+        "weight": 1
+      }
+    ],
+    "jiraReports": [
+      {
+        "url": "/jira/report?projectKey={project.key}",
+        "description": {
+          "value": "This is an example report"
+        },
+        "reportCategory": "agile",
+        "thumbnailUrl": "/assets/moc-logo.png",
+        "name": {
+          "value": "Example Report"
+        },
+        "key": "report-example"
+      }
+    ]
+  }
+}
