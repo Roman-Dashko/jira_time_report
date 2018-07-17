@@ -1,0 +1,41 @@
+.ac_content
+  %h2= t('moc.reports.moc_reports')
+  %h3= t('moc.reports.time_report')
+
+  = form_tag jira_show_path, :method => :get, remote: true, :id => "query_form", :class => 'aui' do
+    .field-group
+      = label_tag :from, 'Choose dates'
+      = date_field_tag :from , @form_params['from'], class: 'aui-date-picker'
+      = date_field_tag :to , @form_params['to'], class: 'aui-date-picker'
+      = link_to t("moc.periods.today"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.strftime("%F"), to: Date.today.strftime("%F")}
+      = link_to t("moc.periods.yesterday"), "javascript:void(0)", class: 'set-date', data: {from: (Date.today-1.day).strftime("%F"), to: (Date.today-1.day).strftime("%F")}
+      = link_to t("moc.periods.this_week"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.beginning_of_week.strftime("%F"), to: Date.today.strftime("%F")}
+      = link_to t("moc.periods.this_month"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.beginning_of_month.strftime("%F"), to: Date.today.strftime("%F")}
+      = link_to t("moc.periods.last_month"), "javascript:void(0)", class: 'set-date', data: {from: (Date.today.beginning_of_month-1.month).strftime("%F"), to: (Date.today-1.month).end_of_month.strftime("%F")}
+    .field-group
+      = label_tag :projects
+      = select_tag 'projects', options_for_select(@form_params['projects']), multiple: true, class: 'aui-select2'
+    .field-group
+      = label_tag :issue_types, 'Issue types'
+      = select_tag 'issue_types', options_for_select(@form_params['issue_types']), multiple: true, class: 'aui-select2'
+    .field-group
+      = label_tag :assignees
+      = select_tag 'assignees', options_for_select(@form_params['assignees']), multiple: true, class: 'aui-select2'
+    .field-group
+      = label_tag :statuses
+      = select_tag 'statuses', options_for_select(@form_params['statuses']), multiple: true, class: 'aui-select2'
+
+    .field-group
+      = label_tag :group_by, 'Group By'
+      = select_tag 'group_by', options_for_select(@form_params['group_by']), multiple: true, class: 'aui-select2'
+    .field-group
+      = label_tag :detail_by
+      = select_tag 'detail_by', options_for_select(@form_params['detail_by']), class: 'aui-select2'
+
+    .buttons-container
+      .buttons
+        = submit_tag 'Apply', :class => 'button submit'
+        = link_to 'Clear', jira_path, :class => 'cancel'
+
+  .report
+

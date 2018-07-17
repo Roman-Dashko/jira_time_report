@@ -1,0 +1,8 @@
+- params['group_by'].each do |grouping|
+  - value = report_row[grouping] ? report_row[grouping] : ''
+  %td{:headers => grouping} #{value}
+  - @periods.each do |period|
+    - period_record = report_row[params['detail_by']].find {|h| h['date'] == period}
+    - value = period_record.present? ? period_record['seconds'] : ''
+    %td{:headers => period} #{value}
+  %td{:headers => 'total_time'} #{report_row['total_time']}

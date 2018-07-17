@@ -10,6 +10,11 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require jquery-1.8.3.min
+//= require select2.min
+//= require aui.min
+//= require aui-datepicker.min
+//= require aui-experimental.min
 //= require rails-ujs
 //= require activestorage
 //= require turbolinks

@@ -26,16 +26,19 @@ gem 'jbuilder', '~> 2.5'
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
-
+gem 'jquery-rails'
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
-
+gem 'haml'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-
+gem 'pry'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jira-ruby', :require => 'jira-ruby'
+gem 'atlassian-jwt-authentication',
+    git: 'https://github.com/MeisterLabs/atlassian-jwt-authentication.git',
+    require: 'atlassian_jwt_authentication'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

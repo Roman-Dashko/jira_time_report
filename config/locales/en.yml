@@ -30,4 +30,13 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  moc:
+    periods:
+      today: "Today"
+      yesterday: "Yesterday"
+      this_week: "This week"
+      this_month: "This month"
+      last_month: "Last month"
+    reports:
+      moc_reports: "MoC Reports"
+      time_report: "Time Report"

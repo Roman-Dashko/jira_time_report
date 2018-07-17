@@ -1,0 +1,20 @@
+- if @report
+  %table.aui
+    %thead
+      %tr
+        - params['group_by'].each do |grouping|
+          %th##{grouping} #{grouping}.capitalize
+        - @periods.each do |period|
+          %th##{period} #{period}
+        %th#total_time
+    %tbody
+      %tr
+        - @report.last.each do |report_row|
+          - if @report.size > 1
+            - report_row = @report[0].detect {|h| h[params['group_by'][0]] == @report.last[params['group_by']][0]}
+            = render 'report_row', report_row: report_row, params: params, periods: @periods
+          - if @report.size > 2
+            - report_row = @report[1].detect {|h| h[params['group_by'][0]] == @report.last[params['group_by']][0] && h[params['group_by'][1]] == @report.last[params['group_by']][1]}
+            = render 'report_row', report_row: report_row, params: params, periods: @periods
+          = render 'report_row', report_row: report_row, params: params, periods: @periods
+
