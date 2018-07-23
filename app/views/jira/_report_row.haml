@@ -1,8 +1,9 @@
-- params['group_by'].each do |grouping|
-  - value = report_row[grouping] ? report_row[grouping] : ''
-  %td{:headers => grouping} #{value}
-  - @periods.each do |period|
-    - period_record = report_row[params['detail_by']].find {|h| h['date'] == period}
+- params['group_by'].each_with_index do |grouping, index|
+  - value = report_row[grouping] && (index+1 == grouping_number) ? report_row[grouping] : ''
+  %td{:headers => grouping, :class => 'string'} #{value}
+- @periods.each do |period|
+  - if period['date']
+    - period_record = report_row[params['detail_by']].find {|h| h['date'] == period['date']}
     - value = period_record.present? ? period_record['seconds'] : ''
-    %td{:headers => period} #{value}
-  %td{:headers => 'total_time'} #{report_row['total_time']}
+    %td{:headers => period['date'], class: 'number'} #{to_hours(value)}
+%td{:headers => 'total_time', class: 'bold_number'} #{to_hours(report_row['total_time'])}

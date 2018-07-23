@@ -1,12 +1,11 @@
 .ac_content
-  %h2= t('moc.reports.moc_reports')
-  %h3= t('moc.reports.time_report')
+  %h3.title= t('moc.reports.time_report')
 
-  = form_tag jira_show_path, :method => :get, remote: true, :id => "query_form", :class => 'aui' do
+  = form_tag jira_show_path, :method => :get, :remote => true, :id => "query_form", :class => 'aui' do
     .field-group
       = label_tag :from, 'Choose dates'
-      = date_field_tag :from , @form_params['from'], class: 'aui-date-picker'
-      = date_field_tag :to , @form_params['to'], class: 'aui-date-picker'
+      = date_field_tag :from , @form_params['from'], class: 'aui-date-picker date-picker'
+      = date_field_tag :to , @form_params['to'], class: 'aui-date-picker date-picker'
       = link_to t("moc.periods.today"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.strftime("%F"), to: Date.today.strftime("%F")}
       = link_to t("moc.periods.yesterday"), "javascript:void(0)", class: 'set-date', data: {from: (Date.today-1.day).strftime("%F"), to: (Date.today-1.day).strftime("%F")}
       = link_to t("moc.periods.this_week"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.beginning_of_week.strftime("%F"), to: Date.today.strftime("%F")}
@@ -28,6 +27,7 @@
     .field-group
       = label_tag :group_by, 'Group By'
       = select_tag 'group_by', options_for_select(@form_params['group_by']), multiple: true, class: 'aui-select2'
+      = hidden_field_tag 'ordered_group_by'
     .field-group
       = label_tag :detail_by
       = select_tag 'detail_by', options_for_select(@form_params['detail_by']), class: 'aui-select2'
@@ -35,7 +35,8 @@
     .buttons-container
       .buttons
         = submit_tag 'Apply', :class => 'button submit'
-        = link_to 'Clear', jira_path, :class => 'cancel'
+        -#= link_to 'Apply', "javascript:void(0)", :class => 'button submit', :id => 'submit'
+        = link_to 'Clear', "javascript:void(0)", :class => 'cancel', :id => 'clear'
 
   .report
 

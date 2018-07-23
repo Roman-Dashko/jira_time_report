@@ -1,3 +1,72 @@
 // Place all the styles related to the Configuration controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+h3:first-child.title {
+  padding: 4px 0 4px 145px;
+}
+
+.date-picker {
+  width: 119px;
+}
+
+.report {
+  margin-top: 20px;
+}
+
+table.aui {
+
+  thead>tr {
+    background-color: #e6e6e6
+  }
+
+  thead>tr>th.number {
+    text-align: center;
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  thead>tr>th.string {
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  tbody>tr>td.number {
+    text-align: center;
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  tbody>tr>td.bold_number {
+    text-align: center;
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+    font-weight: bold;
+  }
+
+  tbody>tr>td.string {
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  tbody>tr:nth-child(even) {
+    background-color: #f2f2f2
+  }
+
+  tfoot>tr>td.number {
+    text-align: center;
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  tfoot>tr>td.string {
+    text-align: center;
+    border-right: solid 1px #b3b3b3;
+    border-left: solid 1px #b3b3b3;
+  }
+
+  tfoot>tr.footer {
+    background: #e6e6e6;
+    font-weight: bold;
+  }
+}

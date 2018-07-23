@@ -12,12 +12,23 @@ AJS.$(document).ready ->
     return
 
 ready = ->
-  setDate = ->
+  $('.set-date').click ->
     $('#from').val $(this).data("from")
     $('#to').val $(this).data("to")
     return
 
-  $('.set-date').click setDate
+  $('#clear').click ->
+    $('.aui-select2').select2 'val', ''
+    $('.report').html('')
+    return
+
+  $('#group_by').live 'change', ->
+    groupings = []
+    $('#s2id_group_by > ul > li > div').each ->
+      groupings.push $(this).text()
+    $('#ordered_group_by').val groupings
+  return
+
 
 $(document).ready(ready)
 $(document).on('page:load', ready)

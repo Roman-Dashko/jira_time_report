@@ -14,10 +14,10 @@ class JiraController < ApplicationController
   end
 
   def show
+    params['group_by'] =  params['group_by'] ? params['ordered_group_by'].split(',') : ['issue']
     @report = Reports::TimeReport.data(params)
-    @periods = Reports::TimeReport.periods(@report)
+    @periods = Reports::TimeReport.periods(@report, params['detail_by']) if @report
     p 'hhh'
-    # @report = "Report"
     respond_to do |format|
       format.js
     end

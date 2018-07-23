@@ -38,5 +38,4 @@ en:
       this_month: "This month"
       last_month: "Last month"
     reports:
-      moc_reports: "MoC Reports"
-      time_report: "Time Report"
+      time_report: "MOC Time Report"
