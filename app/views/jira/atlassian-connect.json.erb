@@ -1,7 +1,7 @@
 {
-  "name": "Test Plugin",
-  "description": "Atlassian Connect app",
-  "key": "com.example.myapp",
+  "name": "MOC Report Plugin",
+  "description": "Atlassian Connect MOC Report app",
+  "key": "app-moc-report",
   "baseUrl": "https://romand.serveo.net",
   "vendor": {
     "name": "Example, Inc.",
@@ -15,45 +15,34 @@
     "generalPages": [
       {
         "url": "/jira",
-        "key": "moc-report",
+        "key": "gP-moc-report",
         "location": "system.top.navigation.bar",
         "name": {
           "value": "MOC Report"
         }
       }
     ],
-    "webPanels": [
-      {
-        "key": "my-configuration-page",
-        "url": "/jira?id={board.id}&type={board.type}",
-        "name": {
-          "value": "My Configuration Page"
-        },
-        "location": "jira.agile.board.configuration",
-        "weight": 1
-      }
-    ],
     "jiraReports": [
       {
-        "url": "/jira/report?projectKey={project.key}",
+        "url": "/jira?projectId={project.id}",
         "description": {
           "value": "This is an example report"
         },
         "reportCategory": "agile",
         "thumbnailUrl": "/assets/moc-logo.png",
         "name": {
-          "value": "Example Report"
+          "value": "MOC Report"
         },
-        "key": "report-example"
+        "key": "jR-moc-report"
       }
     ],
     "jiraProjectPages": [
       {
-        "key": "moc-project-page",
+        "key": "jPP-moc-report",
         "name": {
-          "value": "MOC time report"
+          "value": "MOC Report"
         },
-        "url": "/jira/report?projectKey={project.key}",
+        "url": "/jira?projectId={project.id}",
         "weight": 1
       }
     ]

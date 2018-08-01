@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 2018_06_25_142743) do
     t.string "addon_key"
     t.string "client_key"
     t.string "shared_secret"
+    t.string "oauth_client_id"
     t.string "product_type"
     t.string "base_url"
     t.string "api_base_url"
@@ -24,9 +25,10 @@ ActiveRecord::Schema.define(version: 2018_06_25_142743) do
 
   create_table "jwt_users", force: :cascade do |t|
     t.integer "jwt_token_id"
+    t.string "account_id"
+    t.string "display_name"
     t.string "user_key"
     t.string "name"
-    t.string "display_name"
   end
 
 end

@@ -37,5 +37,8 @@ en:
       this_week: "This week"
       this_month: "This month"
       last_month: "Last month"
+    labels:
+      issue_types: 'Issue Types'
+      group_by: 'Group By'
     reports:
       time_report: "MOC Time Report"

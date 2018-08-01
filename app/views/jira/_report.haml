@@ -1,9 +1,9 @@
-- if @report
+- if @report.present?
   %table.aui
     %thead
       %tr
         - params['group_by'].each do |grouping|
-          %th{:id => grouping, :class => 'string'} #{grouping.capitalize}
+          %th{:id => grouping, :class => 'string'} #{grouping.titlecase}
         - @periods.each do |period|
           - if period['date']
             %th{:id => period['date'], :class => 'number'} #{period['date']}
@@ -33,4 +33,6 @@
           - if period['date']
             %td{:id => period['date'], class: 'number'} #{to_hours(period['seconds'])}
         %td#total_time{class: 'number'} #{to_hours(@periods.last['total_time'])}
+      %tr
+        - link_to 'Export to csv', jira_show_path(format: :csv)
 

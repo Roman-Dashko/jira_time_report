@@ -1,1 +1,2 @@
-require 'atlassian_jwt_authentication'
+require 'atlassian/jwt'
+# require 'atlassian_jwt_authentication'

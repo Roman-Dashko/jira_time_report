@@ -22,13 +22,26 @@ ready = ->
     $('.report').html('')
     return
 
-  $('#group_by').live 'change', ->
+  if 'localStorage' of window and window['localStorage'] != null
+    if 'myTable' of localStorage and window.location.hash == '#reportMOC'
+      $('#s2id_group_by').html localStorage.getItem('groupByReportMOC')
+      $('#report').html localStorage.getItem('reportMOC')
+
+$(window).unload ->
+  if 'localStorage' of window and window['localStorage'] != null
+    localStorage.setItem 'groupByReportMOC', $('#s2id_group_by').html()
+    localStorage.setItem 'reportMOC', $('#report').html()
+  return
+
+$(document).ready(ready)
+$(document)
+  .on('page:load', ready)
+
+  .on 'submit', '#query_form', (event) ->
+    event.preventDefault()
     groupings = []
     $('#s2id_group_by > ul > li > div').each ->
       groupings.push $(this).text()
     $('#ordered_group_by').val groupings
-  return
-
-
-$(document).ready(ready)
-$(document).on('page:load', ready)
+    location.hash = 'reportMOC'
+    $('#apply').click()

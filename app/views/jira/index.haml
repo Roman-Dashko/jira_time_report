@@ -12,10 +12,13 @@
       = link_to t("moc.periods.this_month"), "javascript:void(0)", class: 'set-date', data: {from: Date.today.beginning_of_month.strftime("%F"), to: Date.today.strftime("%F")}
       = link_to t("moc.periods.last_month"), "javascript:void(0)", class: 'set-date', data: {from: (Date.today.beginning_of_month-1.month).strftime("%F"), to: (Date.today-1.month).end_of_month.strftime("%F")}
     .field-group
-      = label_tag :projects
-      = select_tag 'projects', options_for_select(@form_params['projects']), multiple: true, class: 'aui-select2'
+      - if params.key?('projectId')
+        = hidden_field_tag('projects', params['projectId'])
+      - else
+        = label_tag :projects
+        = select_tag 'projects', options_for_select(@form_params['projects']), multiple: true, class: 'aui-select2'
     .field-group
-      = label_tag :issue_types, 'Issue types'
+      = label_tag :issue_types, t("moc.labels.issue_types")
       = select_tag 'issue_types', options_for_select(@form_params['issue_types']), multiple: true, class: 'aui-select2'
     .field-group
       = label_tag :assignees
@@ -25,18 +28,19 @@
       = select_tag 'statuses', options_for_select(@form_params['statuses']), multiple: true, class: 'aui-select2'
 
     .field-group
-      = label_tag :group_by, 'Group By'
+      = label_tag :group_by, t("moc.labels.group_by")
       = select_tag 'group_by', options_for_select(@form_params['group_by']), multiple: true, class: 'aui-select2'
       = hidden_field_tag 'ordered_group_by'
     .field-group
       = label_tag :detail_by
       = select_tag 'detail_by', options_for_select(@form_params['detail_by']), class: 'aui-select2'
+      = hidden_field_tag 'report_cache'
 
     .buttons-container
       .buttons
-        = submit_tag 'Apply', :class => 'button submit'
+        = submit_tag 'Apply', :class => 'button submit', :id => 'apply'
         -#= link_to 'Apply', "javascript:void(0)", :class => 'button submit', :id => 'submit'
         = link_to 'Clear', "javascript:void(0)", :class => 'cancel', :id => 'clear'
 
-  .report
+  #report
 

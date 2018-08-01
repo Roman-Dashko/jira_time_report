@@ -5,9 +5,10 @@ class CreateAtlassianJwtUsers < ActiveRecord::Migration[5.2]
     else
       create_table :jwt_users do |t|
         t.integer :jwt_token_id
+        t.string :account_id
+        t.string :display_name
         t.string :user_key
         t.string :name
-        t.string :display_name
       end
     end
   end

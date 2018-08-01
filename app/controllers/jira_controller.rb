@@ -1,25 +1,24 @@
 class JiraController < ApplicationController
 
-  before_action :get_jira_client
-
-  def initial_json
-    # render json: AtlassianConnect::CONFIG.to_json
-    render 'atlassian-connect.json'
-  end
+# will respond with head(:unauthorized) if verification fails
+#   before_action only: [:index] do |controller|
+#     controller.send(:verify_jwt, 'app-moc-report')
+#   end
 
   def index
-    #   @projectKey = params[:projectKey]
-    @form_params = Reports::TimeReport.form_params
-
+    # request_OAuth_access_token
+    @form_params = form_params
   end
 
   def show
-    params['group_by'] =  params['group_by'] ? params['ordered_group_by'].split(',') : ['issue']
-    @report = Reports::TimeReport.data(params)
-    @periods = Reports::TimeReport.periods(@report, params['detail_by']) if @report
+
+    params['group_by'] = params['group_by'].present? ? params['ordered_group_by'].split(',') : ['issue']
+    @report = data(params)
+    @periods = periods(@report, params['detail_by']) if @report.present?
     p 'hhh'
     respond_to do |format|
       format.js
+      format.csv { send_data Acc::GeneralReport.to_csv(@report), filename: 'timelog.csv' }
     end
 
   end

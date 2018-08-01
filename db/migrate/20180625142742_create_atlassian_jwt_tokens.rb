@@ -7,6 +7,7 @@ class CreateAtlassianJwtTokens < ActiveRecord::Migration[5.2]
         t.string :addon_key
         t.string :client_key
         t.string :shared_secret
+        t.string :oauth_client_id
         t.string :product_type
         t.string :base_url
         t.string :api_base_url

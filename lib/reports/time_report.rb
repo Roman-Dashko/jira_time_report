@@ -1,7 +1,7 @@
 module Reports
   module TimeReport
 
-    def self.form_params
+    def form_params
       form_params = {}
       form_params['from'] = Date.new(2018, 5, 1)
       form_params['to'] = Date.new(2018, 5, 31)
@@ -17,42 +17,81 @@ module Reports
       form_params
     end
 
-    def self.projects
-      response = HTTParty.get(create_url({'projects' => 'all'}))
+    def projects
+      # url = url({'projects' => 'all'}, false)
+      # uri = URI("#{current_jwt_auth.api_base_url}#{url}")
+      # http = Net::HTTP.new(uri.host, uri.port)
+      # http.use_ssl = true
+      # request = Net::HTTP::Get.new(uri.request_uri)
+      # request.initialize_http_header({'Authorization' => "JWT #{jwt_token(:get, url)}"})
+      # response = http.request(request)
+
+
+      response = HTTParty.get(url({'projects' => 'all'}))
       response.parsed_response.collect {|h| ["#{h['name']} (#{h['key']})", h['id']]}
     end
 
-    def self.issue_types
-      response = HTTParty.get(create_url({'issue_types' => 'all'}))
+    def issue_types
+      response = HTTParty.get(url({'issue_types' => 'all'}))
       response.parsed_response.collect {|h| [h['name']]}.uniq
     end
 
-    def self.assignees
-      response = HTTParty.get(create_url({'assignees' => 'all'}))
+    def assignees
+#       url = 'https://romand.atlassian.net/rest/api/2/user/search?username=%'
+# # The key of the add-on as defined in the add-on description
+#       issuer = 'app-moc-report'
+#       http_method = 'get' # The HTTP Method (GET, POST, etc) of the API call
+#       shared_secret = 'WSTwGKD5ClZ66oT7DLSB3rVTv+LyZdYSs4U+yUOyCTjpM5dZim2jrIgSTRH6pdwviMtVb2EV1ebpA+jaVbOkNw' # "sharedSecret", returned when the add-on is installed.
+#       base_url = 'https://romand.atlassian.net'
+#       claim = Atlassian::Jwt.build_claims(issuer,url,http_method,base_url)
+#       jwt = JWT.encode(claim,shared_secret)
+
+
+
+
+      # url = url({'assignees' => 'all'}, false)
+      # uri = URI(url)
+      # uri = URI("#{url}?jwt=#{jwt}")
+      #
+      # http = Net::HTTP.new(uri.host, uri.port)
+      # http.use_ssl = true
+      # request = Net::HTTP::Get.new(uri.request_uri)
+      # # request.initialize_http_header({'Authorization' => "JWT #{jwt}"})
+      # response = http.request(request)
+
+# Query String
+#       http = Net::HTTP.new(uri.host, uri.port)
+#       request = Net::HTTP::Get.new(uri.request_uri)
+#       response = http.request(request)
+
+      # response
+      response = HTTParty.get(url({'assignees' => 'all'}))
       response.parsed_response.collect {|h| [h['name'], h['emailAddress']]}.select {|ar| !ar[0].include?("addon_")}
     end
 
-    def self.statuses
-      response = HTTParty.get(create_url({'statuses' => 'all'}))
+    def statuses
+      response = HTTParty.get(url({'statuses' => 'all'}))
       response.parsed_response.collect {|h| [h['name'], h['id']]}
     end
 
-    def self.grouping
-      ['project', 'issue', 'type', 'assignee', 'status']
+    def grouping
+      ['project', 'issue', 'issue type', 'assignee', 'status']
     end
 
-    def self.detailing
+    def detailing
       %w(day week month year)
     end
 
-    def self.create_url(params)
+    def url(params, jwt = true)
       url = "http://testtost2018:zzz123456789@romand.atlassian.net/rest/api/2/"
+      # url = '/rest/api/2/'
+      # url = "http://romand.atlassian.net/rest/api/2/"
 
       if params.key?('commit')
         url += URI.encode("search?fields=project,summary,issuetype,assignee,status,worklog&jql=worklogDate >= #{params['from']} AND worklogDate <= #{params['to']}")
 
         if params.key?('projects')
-          url += URI.encode(" AND project in (#{params['projects'].map {|el| "'#{el}'"}.join(',')})")
+          url += URI.encode(" AND project in (#{params['projects'].split.map {|el| "'#{el}'"}.join(',')})")
         end
         if params.key?('issue_types')
           url += URI.encode(" AND issuetype in (#{params['issue_types'].map {|el| "'#{el}'"}.join(',')})")
@@ -74,19 +113,18 @@ module Reports
         end
 
         if params['assignees'] == 'all'
-          url += '/user/search?username=%'
+          url += 'user/search?username=%'
         end
 
         if params['statuses'] == 'all'
           url += 'status'
         end
       end
-
       url
-
+     # jwt ? rest_api_url(:get, url) : url
     end
 
-    def self.group_data(data, params)
+    def group_data(data, params)
       data = data.group_by {|hash| hash.values_at(*params).join ":"}.values.map do |grouped|
         grouped.inject do |merged, n|
           merged.merge(n) do |key, v1, v2|
@@ -102,7 +140,7 @@ module Reports
       data.sort_by {|hash| hash.values_at(*params).join ":"}
     end
 
-    def self.detail_data(data, param)
+    def detail_data(data, param)
       date_formatting = case param
                           when 'day'
                             "%Y-%m-%d"
@@ -117,18 +155,33 @@ module Reports
       data.each {|hash| hash['total_time'] = hash['worklogs'].map {|s| s['seconds']}.reduce(0, :+)}
     end
 
-    def self.data(params = {})
-      url = create_url(params)
+    def data(params = {})
+      url = url(params, false)
+      # url = rest_api_url(:get, url)
+
+
+      # uri = URI("#{current_jwt_auth.api_base_url}#{url}")
+      # http = Net::HTTP.new(uri.host, uri.port)
+      # http.use_ssl = true
+      # request = Net::HTTP::Get.new(uri.request_uri)
+      # request.initialize_http_header({'Authorization' => "JWT #{jwt_token(:get, url)}"})
+      # response = http.request(request)
+
+
+      # response = HTTParty.send(:get, url, {
+      #   # body: data ? data.to_json : nil,
+      #   headers: {'Content-Type' => 'application/json', 'Authorization' => "JWT #{jwt_token(:get, url)}"}
+      # })
 
       response = HTTParty.get(url)
-      return if response.nil?
+      return nil if response.parsed_response['issues'].nil?
 
       data = []
       response.parsed_response['issues'].each do |issue|
         issue_data = {}
-        issue_data['project'] = issue['fields']['project']['name']
+        issue_data['project'] = issue['fields']['project']['key'] + ': ' + issue['fields']['project']['name']
         issue_data['issue'] = issue['key'] + ': ' + issue['fields']['summary']
-        issue_data['type'] = issue['fields']['issuetype']['name']
+        issue_data['issue type'] = issue['fields']['issuetype']['name']
         issue_data['assignee'] = issue['fields']['assignee']['name']
         issue_data['status'] = issue['fields']['status']['name']
 
@@ -156,7 +209,7 @@ module Reports
       report
     end
 
-    def self.periods(data, param)
+    def periods(data, param)
       periods = data.last.map {|hash| hash[param]}.flatten.group_by {|h| h['date']}
                   .map {|k, v| {'date' => k, 'seconds' => v.map {|h1| h1['seconds']}.inject(:+)}}.sort_by {|h2| h2['date']}
       periods << {'total_time' => data.first.map {|hash| hash['total_time']}.inject(:+)}
