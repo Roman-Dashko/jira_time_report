@@ -34,7 +34,7 @@
     .field-group
       = label_tag :detail_by
       = select_tag 'detail_by', options_for_select(@form_params['detail_by']), class: 'aui-select2'
-      = hidden_field_tag 'report_cache'
+      -#= hidden_field_tag 'report_cache'
 
     .buttons-container
       .buttons

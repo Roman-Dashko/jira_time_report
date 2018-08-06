@@ -2,8 +2,6 @@ class ApplicationController < ActionController::Base
 
 	include AtlassianJwtAuthenticationMOC::Filters
 	include AtlassianJwtAuthenticationMOC::Helper
-	include Reports::TimeReport
-
 
 	protect_from_forgery with: :null_session
 

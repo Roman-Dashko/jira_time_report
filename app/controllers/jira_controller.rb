@@ -7,23 +7,26 @@ class JiraController < ApplicationController
 
   def index
     # request_OAuth_access_token
-    @form_params = form_params
+    @form_params = Reports::TimeReport.create_form_params
   end
 
-  def show
+  def show(options = {})
 
-    params['group_by'] = params['group_by'].present? ? params['ordered_group_by'].split(',') : ['issue']
-    @report = data(params)
-    @periods = periods(@report, params['detail_by']) if @report.present?
-    p 'hhh'
+    params['group_by'] = params['group_by'].present? && params['ordered_group_by'].present? ? params['ordered_group_by'].split(',') : ['issue']
+    @grouping = params['group_by']
+    @report_params = report_params
+    @report = Reports::TimeReport.create_report(@report_params)
     respond_to do |format|
       format.js
-      format.csv { send_data Acc::GeneralReport.to_csv(@report), filename: 'timelog.csv' }
+      format.csv { send_data Reports::TimeReport.to_csv(@report), filename: 'timelog.csv' }
     end
-
   end
 
   private
+
+  def report_params
+    params.permit(:from, :to, :detail_by, :commit, :ordered_group_by, :group_by => [])
+  end
 
   def default_params_date
     @from = Date.new(2018, 5, 1)

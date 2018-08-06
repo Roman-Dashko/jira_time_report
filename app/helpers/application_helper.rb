@@ -1,5 +1,20 @@
 module ApplicationHelper
-  def to_hours(seconds)
-    seconds.to_i > 0 ? number_with_precision(seconds.to_f/3600, precision: 2) : ''
+
+  def style(report_part, type)
+    if report_part == 'body'
+      if type == 'grouping'
+        'string'
+      elsif type == 'period'
+        'number'
+      else
+        'bold_number'
+      end
+    else
+      type == 'grouping' ? 'string' : 'number'
+    end
+  end
+
+  def data_type(i)
+    @report['header'][@report['header'].keys[i]]
   end
 end

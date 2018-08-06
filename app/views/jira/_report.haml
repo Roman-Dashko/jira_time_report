@@ -2,37 +2,30 @@
   %table.aui
     %thead
       %tr
-        - params['group_by'].each do |grouping|
-          %th{:id => grouping, :class => 'string'} #{grouping.titlecase}
-        - @periods.each do |period|
-          - if period['date']
-            %th{:id => period['date'], :class => 'number'} #{period['date']}
-        %th#total_time{:class => 'number'} Total Time
+        - @report['header'].each do |value, type|
+          %th{:id => value, :class => style('header', type)}
+            = type == 'period' ? value : value.titlecase
     %tbody
-      - @report.last.each do |report_row|
-        - i = 1
-        - condition = "h[params['group_by'][0]] == report_row[params['group_by'][0]]"
-        - while i < @report.size
-          - condition_lambda = eval "->(h) {#{condition}}"
-          - report_row_grouping = @report[i-1].detect &condition_lambda
-          - if report_row_grouping.present? && !report_row_grouping['rendered']
-            %tr
-              = render 'report_row', report_row: report_row_grouping, params: params, periods: @periods, grouping_number: i
-              - report_row_grouping['rendered'] = true
-          - condition += " && h[params['group_by'][#{i}]] == report_row[params['group_by'][#{i}]]"
-          - i += 1
+      - @report['body'].each do |body_row|
         %tr
-          - grouping_number = @report.size
-          = render 'report_row', report_row: report_row, params: params, periods: @periods, grouping_number: grouping_number
+          - body_row.each_with_index do |value, i|
+            %td{:headers => @report['header'][i], :class => style('body', data_type(i))}
+              %p
+                - if value.present?
+                  - if ['project', 'issue'].include?(@grouping[i])
+                    - key = value.split(/:::/).first
+                    -#= link_to key, "https://testtost2018:zzz123456789@romand.atlassian.net/browse/#{key}"
+                    = link_to key, "https://romand.atlassian.net/browse/#{key}"
+                    = ": #{value.split(/:::/).last}"
+                  - elsif @grouping[i] == 'assignee'
+                    -#= link_to value, "https://testtost2018:zzz123456789@romand.atlassian.net/secure/ViewProfile.jspa?name=#{value}"
+                    = link_to value, "https://romand.atlassian.net/secure/ViewProfile.jspa?name=#{value}"
+                  - else
+                    = value
     %tfoot
       %tr.footer
-        - params['group_by'].each_with_index do |grouping, index|
-          - value = index == 0 ? 'Total Time' : ''
-          %td{:id => grouping, :class => 'string'} #{value}
-        - @periods.each do |period|
-          - if period['date']
-            %td{:id => period['date'], class: 'number'} #{to_hours(period['seconds'])}
-        %td#total_time{class: 'number'} #{to_hours(@periods.last['total_time'])}
+        - @report['footer'].each_with_index do |value, i|
+          %td{:id => @report['header'][i], :class => style('footer', data_type(i))}
+            = value
       %tr
-        - link_to 'Export to csv', jira_show_path(format: :csv)
-
+        = link_to 'Export to csv', jira_show_path(format: :csv, params: @report_params)
