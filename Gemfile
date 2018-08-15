@@ -36,10 +36,7 @@ gem 'pry'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'atlassian-jwt'
 gem 'bootsnap', '>= 1.1.0', require: false
-gem 'jira-ruby', :require => 'jira-ruby'
-gem 'atlassian-jwt-authentication',
-    git: 'https://github.com/MeisterLabs/atlassian-jwt-authentication.git',
-    require: 'atlassian_jwt_authentication'
+gem 'httparty'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

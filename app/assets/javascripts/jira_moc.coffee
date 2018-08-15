@@ -24,14 +24,10 @@ ready = ->
 
   if 'localStorage' of window and window['localStorage'] != null
     if 'myTable' of localStorage and window.location.hash == '#reportMOC'
-#      $('#s2id_group_by').html localStorage.getItem('groupByReportMOC')
-#      $('#s2id_group_by').trigger('change')
       $('#report').html localStorage.getItem('reportMOC')
 
 $(window).unload ->
   if 'localStorage' of window and window['localStorage'] != null
-#    localStorage.setItem 'groupByReportMOC', $('#s2id_group_by').html()
-#    localStorage.setItem 'groupingsReportMOC', getGroupings
     localStorage.setItem 'reportMOC', $('#report').html()
   return
 
@@ -53,3 +49,10 @@ $(document)
     $('#ordered_group_by').val groupings
     location.hash = 'reportMOC'
     $('#apply').click()
+
+  .on 'select2:select', (e) ->
+    id = e.params.data.id
+    option = $(e.target).children('[value=' + id + ']')
+    option.detach()
+    $(e.target).append(option).change()
+    return

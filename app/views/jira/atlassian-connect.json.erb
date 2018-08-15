@@ -8,8 +8,16 @@
     "url": "http://example.com"
   },
   "authentication": {
-    "type": "none"
+    "type": "jwt"
   },
+  "lifecycle": {
+    "installed": "/jira/installed",
+    "uninstalled": "/jira/uninstalled"
+  },
+  "scopes": [
+    "read",
+    "act_as_user"
+  ],
   "apiVersion": 1,
   "modules": {
     "generalPages": [

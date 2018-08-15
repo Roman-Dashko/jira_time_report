@@ -1,20 +1,24 @@
 require 'jwt'
 
-module AtlassianJwtAuthenticationMOC
+module AtlassianJwtAuthentication
   module Filters
-    # protected
 
     AUTHORIZATION_SERVER_URL = "https://auth.atlassian.io"
     EXPIRY_SECONDS = 50
     GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer"
     SCOPES = "READ ACT_AS_USER"
 
-    def request_OAuth_access_token
+    def OAuth_access_token
+
+      if current_jwt_user.oauth_access_token.present?
+        return current_jwt_user.oauth_access_token  if current_jwt_user.expires_at > Time.now.to_i
+      end
+
       opts = {}
-      opts['oauthClientId'] = current_jwt_user['account_id']
-      opts['instanceBaseUrl'] = current_jwt_auth['base_url']
-      opts['userKey'] = current_jwt_user['user_key']
-      opts['secret'] = current_jwt_auth['shared_secret']
+      opts['oauthClientId'] = current_jwt_auth.oauth_client_id
+      opts['instanceBaseUrl'] = current_jwt_auth.base_url
+      opts['userKey'] = current_jwt_user.user_key
+      opts['secret'] = current_jwt_auth.shared_secret
 
       jwtClaims = {
         iss: "urn:atlassian:connect:clientid:" + opts['oauthClientId'],
@@ -34,7 +38,9 @@ module AtlassianJwtAuthenticationMOC
       };
 
       response = HTTParty.post(AUTHORIZATION_SERVER_URL + '/oauth2/token', query: query)
-      response
+      current_jwt_user.oauth_access_token = response['access_token']
+      current_jwt_user.expires_at = (Time.now + 14.minutes).to_i
+      current_jwt_user.save
 
     end
 
@@ -61,38 +67,22 @@ module AtlassianJwtAuthenticationMOC
       api_base_url = params[:baseApiUrl] || base_url
 
       jwt_auth = JwtToken.where(client_key: client_key, addon_key: addon_key).first
-      if jwt_auth
-        # The add-on was previously installed on this client
-        # return false unless _verify_jwt(addon_key)
-        # if jwt_auth.id != current_jwt_auth.id
-        #   # Update request was issued to another plugin
-        #   head(:forbidden)
-        #   return false
-        # end
-      else
-        self.current_jwt_auth = JwtToken.new(jwt_token_params)
-      end
+      self.current_jwt_auth = JwtToken.new(jwt_token_params) unless jwt_auth
 
       current_jwt_auth.addon_key = addon_key
       current_jwt_auth.shared_secret = shared_secret
-      # current_jwt_auth.oauth_client_id = oauth_client_id
+      current_jwt_auth.oauth_client_id = oauth_client_id
       current_jwt_auth.product_type = "atlassian:#{product_type}"
       current_jwt_auth.base_url = base_url if current_jwt_auth.respond_to?(:base_url)
       current_jwt_auth.api_base_url = api_base_url if current_jwt_auth.respond_to?(:api_base_url)
 
       current_jwt_auth.save!
 
-      # jwt_user = current_jwt_auth.jwt_users.where(user_key: params[:user_key]).first
-      # JwtUser.create(jwt_token_id: current_jwt_auth.id,
-      #                user_key: params[:user_key]) unless jwt_user
-
       true
     end
 
     def on_add_on_uninstalled
       addon_key = params[:key]
-
-      # return unless _verify_jwt(addon_key)
 
       client_key = params[:clientKey]
 
@@ -109,29 +99,6 @@ module AtlassianJwtAuthenticationMOC
     def verify_jwt(addon_key)
       _verify_jwt(addon_key, true)
     end
-
-    # # Returns the current JWT auth object if it exists
-    # def current_jwt_auth
-    #   @jwt_auth ||= session[:jwt_auth] ? JwtToken.where(id: session[:jwt_auth]).first : nil
-    # end
-    #
-    # # Sets the current JWT auth object
-    # def current_jwt_auth=(jwt_auth)
-    #   session[:jwt_auth] = jwt_auth.nil? ? nil : jwt_auth.id
-    #   @jwt_auth = jwt_auth
-    # end
-    #
-    # # Returns the current JWT User if it exists
-    # def current_jwt_user
-    #   @jwt_user ||= session[:jwt_user] ? JwtUser.where(id: session[:jwt_user]).first : nil
-    # end
-    #
-    # # Sets the current JWT user
-    # def current_jwt_user=(jwt_user)
-    #   session[:jwt_user] = jwt_user.nil? ? nil : jwt_user.id
-    #   @jwt_user = jwt_user
-    # end
-
 
     private
 
@@ -217,15 +184,15 @@ module AtlassianJwtAuthenticationMOC
         return false
       end
 
-      # Verify the query has not been tampered by Creating a Query Hash and
-      # comparing it against the qsh claim on the verified token
+      # # Verify the query has not been tampered by Creating a Query Hash and
+      # # comparing it against the qsh claim on the verified token
       # if jwt_auth.base_url.present? && request.url.include?(jwt_auth.base_url)
       #   path = request.url.gsub(jwt_auth.base_url, '')
       # else
       #   path = request.path.gsub(context_path, '')
       # end
       # path = '/' if path.empty?
-
+      #
       # qsh_parameters = request.query_parameters.
       #     except(:jwt)
       #
@@ -251,12 +218,10 @@ module AtlassianJwtAuthenticationMOC
 
         self.current_jwt_user = current_jwt_auth.jwt_users.where(user_key: data['context']['user']['userKey']).first
         self.current_jwt_user = JwtUser.create(jwt_token_id: current_jwt_auth.id,
-                                               # account_id: data['context']['user']['accountId'],
+                                               account_id: data['context']['user']['accountId'],
                                                display_name: data['context']['user']['displayName'],
                                                user_key: data['context']['user']['userKey'],
                                                name: data['context']['user']['username']) unless current_jwt_user
-      # elsif params[:user_uuid]
-      #   self.current_jwt_user = current_jwt_auth.jwt_users.where(user_key: params[:user_uuid]).first
       end
 
       true

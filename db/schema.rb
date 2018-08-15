@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(version: 2018_06_25_142743) do
     t.string "display_name"
     t.string "user_key"
     t.string "name"
+    t.string "oauth_access_token"
+    t.integer "expires_at"
   end
 
 end

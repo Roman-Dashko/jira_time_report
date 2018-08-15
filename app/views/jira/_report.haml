@@ -15,11 +15,11 @@
                   - if ['project', 'issue'].include?(@grouping[i])
                     - key = value.split(/:::/).first
                     -#= link_to key, "https://testtost2018:zzz123456789@romand.atlassian.net/browse/#{key}"
-                    = link_to key, "https://romand.atlassian.net/browse/#{key}"
+                    = link_to key, "#{@api_base_url}/browse/#{key}"
                     = ": #{value.split(/:::/).last}"
                   - elsif @grouping[i] == 'assignee'
                     -#= link_to value, "https://testtost2018:zzz123456789@romand.atlassian.net/secure/ViewProfile.jspa?name=#{value}"
-                    = link_to value, "https://romand.atlassian.net/secure/ViewProfile.jspa?name=#{value}"
+                    = link_to value, "#{@api_base_url}/secure/ViewProfile.jspa?name=#{value}"
                   - else
                     = value
     %tfoot

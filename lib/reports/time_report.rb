@@ -5,10 +5,16 @@ module Reports
     extend ActiveSupport::NumberHelper
 
     class << self
-      def create_form_params
+      def create_form_params(api_base_url, oauth_access_token)
+        @@api_base_url = api_base_url
+        @@oauth_access_token = oauth_access_token
+
         form_params = {}
-        form_params['from'] = Date.new(2018, 5, 1)
-        form_params['to'] = Date.new(2018, 5, 31)
+        # form_params['from'] = Date.today.beginning_of_month.to_s
+        # form_params['to'] = Date.today.to_s
+        form_params['from'] = Date.new(2018, 5, 1).to_s
+        form_params['to'] = Date.new(2018, 5, 31).to_s
+
 
         form_params['projects'] = projects
         form_params['issue_types'] = issue_types
@@ -21,58 +27,29 @@ module Reports
         form_params
       end
 
+      def api_request(url)
+        HTTParty.send(:get, url, {
+          headers: {'Content-Type' => 'application/json', 'Authorization' => "Bearer " + @@oauth_access_token}
+        })
+      end
+
       def projects
-        # url = url({'projects' => 'all'}, false)
-        # uri = URI("#{current_jwt_auth.api_base_url}#{url}")
-        # http = Net::HTTP.new(uri.host, uri.port)
-        # http.use_ssl = true
-        # request = Net::HTTP::Get.new(uri.request_uri)
-        # request.initialize_http_header({'Authorization' => "JWT #{jwt_token(:get, url)}"})
-        # response = http.request(request)
-
-
-        response = HTTParty.get(create_url({'projects' => 'all'}))
+        response = api_request(create_url({'projects' => 'all'}))
         response.parsed_response.collect {|h| ["#{h['name']} (#{h['key']})", h['id']]}
       end
 
       def issue_types
-        response = HTTParty.get(create_url({'issue_types' => 'all'}))
+        response = api_request(create_url({'issue_types' => 'all'}))
         response.parsed_response.collect {|h| [h['name']]}.uniq
       end
 
       def assignees
-#       url = 'https://romand.atlassian.net/rest/api/2/user/search?username=%'
-# # The key of the add-on as defined in the add-on description
-#       issuer = 'app-moc-report'
-#       http_method = 'get' # The HTTP Method (GET, POST, etc) of the API call
-#       shared_secret = 'WSTwGKD5ClZ66oT7DLSB3rVTv+LyZdYSs4U+yUOyCTjpM5dZim2jrIgSTRH6pdwviMtVb2EV1ebpA+jaVbOkNw' # "sharedSecret", returned when the add-on is installed.
-#       base_url = 'https://romand.atlassian.net'
-#       claim = Atlassian::Jwt.build_claims(issuer,url,http_method,base_url)
-#       jwt = JWT.encode(claim,shared_secret)
-
-
-# url = url({'assignees' => 'all'}, false)
-# uri = URI(url)
-# uri = URI("#{url}?jwt=#{jwt}")
-#
-# http = Net::HTTP.new(uri.host, uri.port)
-# http.use_ssl = true
-# request = Net::HTTP::Get.new(uri.request_uri)
-# # request.initialize_http_header({'Authorization' => "JWT #{jwt}"})
-# response = http.request(request)
-
-# Query String
-#       http = Net::HTTP.new(uri.host, uri.port)
-#       request = Net::HTTP::Get.new(uri.request_uri)
-#       response = http.request(request)
-
-# response
-        response = HTTParty.get(create_url({'assignees' => 'all'}))
+        response = api_request(create_url({'assignees' => 'all'}))
         response.parsed_response.collect {|h| [h['name'], h['emailAddress']]}.select {|ar| !ar[0].include?("addon_")}
       end
 
       def statuses
-        response = HTTParty.get(create_url({'statuses' => 'all'}))
+        response = api_request(create_url({'statuses' => 'all'}))
         response.parsed_response.collect {|h| [h['name'], h['id']]}
       end
 
@@ -84,16 +61,15 @@ module Reports
         %w(day week month year)
       end
 
-      def create_url(params, jwt = true)
-        url = "http://testtost2018:zzz123456789@romand.atlassian.net/rest/api/2/"
-        # url = '/rest/api/2/'
-        # url = "http://romand.atlassian.net/rest/api/2/"
+      def create_url(params)
+        # url = "http://testtost2018:zzz123456789@romand.atlassian.net/rest/api/2/"
+        url = @@api_base_url + '/rest/api/2/'
 
         if params.key?('commit')
           url += URI.encode("search?fields=project,summary,issuetype,assignee,status,worklog&jql=worklogDate >= #{params['from']} AND worklogDate <= #{params['to']}")
 
           if params.key?('projects')
-            url += URI.encode(" AND project in (#{params['projects'].split.map {|el| "'#{el}'"}.join(',')})")
+            url += " AND project in (#{params['projects'].map {|el| "'#{el}'"}.join(',')})"
           end
           if params.key?('issue_types')
             url += URI.encode(" AND issuetype in (#{params['issue_types'].map {|el| "'#{el}'"}.join(',')})")
@@ -123,7 +99,6 @@ module Reports
           end
         end
         url
-        # jwt ? rest_api_url(:get, url) : url
       end
 
       def group_data(data, params)
@@ -158,24 +133,8 @@ module Reports
       end
 
       def create_data
-        url = create_url(@params, false)
-        # url = rest_api_url(:get, url)
 
-
-        # uri = URI("#{current_jwt_auth.api_base_url}#{url}")
-        # http = Net::HTTP.new(uri.host, uri.port)
-        # http.use_ssl = true
-        # request = Net::HTTP::Get.new(uri.request_uri)
-        # request.initialize_http_header({'Authorization' => "JWT #{jwt_token(:get, url)}"})
-        # response = http.request(request)
-
-
-        # response = HTTParty.send(:get, url, {
-        #   # body: data ? data.to_json : nil,
-        #   headers: {'Content-Type' => 'application/json', 'Authorization' => "JWT #{jwt_token(:get, url)}"}
-        # })
-
-        response = HTTParty.get(url)
+        response = api_request(create_url(@params))
         return nil if response.nil? || response.parsed_response['issues'].nil?
 
         data = []
@@ -282,8 +241,12 @@ module Reports
         footer
       end
 
-      def create_report(params)
+      def create_report(params, api_base_url, oauth_access_token)
+
         @params = params
+        @@api_base_url = api_base_url
+        @@oauth_access_token = oauth_access_token
+
         data = create_data
         @periods = create_periods(data, @params['detail_by'])
 
